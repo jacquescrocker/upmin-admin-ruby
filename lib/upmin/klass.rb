@@ -154,8 +154,19 @@ module Upmin
     def Klass.models
       # If Rails
       ::Rails.application.eager_load!
-      rails_models = ::ActiveRecord::Base.descendants.select do |m|
-        m.to_s != "ActiveRecord::SchemaMigration"
+
+      rails_models = []
+
+      # if activerecord
+      if defined?(::ActiveRecord)
+        rails_models += ::ActiveRecord::Base.descendants.select do |m|
+          m.to_s != "ActiveRecord::SchemaMigration"
+        end
+      end
+
+      # if mongoid
+      if defined?(::Mongoid)
+        rails_models += ::Mongoid.models
       end
 
       return rails_models
